@@ -1,9 +1,10 @@
 const express = require('express');
 const cors = require('cors');
+const seedQuestions = require('./services/seedQuestions');
 require('dotenv').config(); // Load environment variables
 
 const app = express();
-const database = require('./models/index');
+const db = require('./models/index');
 
 // CORS Options
 var corsOptions = {
@@ -19,14 +20,20 @@ app.get('/', (req, res) => {
   res.json({ message: 'Welcome to the application.' });
 });
 
-// Sync Database
-database.sequelize.sync({ force: true }).then(() => {
-  console.log('Drop and Resync Db');
-});
+db.sequelize.sync({ force: true }) // Use force: true to recreate the tables
+  .then(() => {
+    console.log('Database synced.');
+    seedQuestions(); // Call the seeding function
+  })
+  .catch((error) => console.error('Error syncing database:', error));
+
 
 // Import and Use Routes
 require('./routes/auth')(app);
 require('./routes/user')(app);
+const quizRoutes = require('./routes/quiz');
+app.use('/api/quiz', quizRoutes);
+
 
 // Start Server
 const PORT = 8080;
