@@ -1,10 +1,10 @@
 const express = require('express');
 const cors = require('cors');
-const seedQuestions = require('./services/seedQuestions');
+const seedQuestions = require('./src/services/seedQuestions');
 require('dotenv').config(); // Load environment variables
 
 const app = express();
-const db = require('./models/index');
+const db = require('./src/models/index');
 
 // CORS Options
 var corsOptions = {
@@ -29,9 +29,9 @@ db.sequelize.sync({ force: true }) // Use force: true to recreate the tables
 
 
 // Import and Use Routes
-require('./routes/auth')(app);
-require('./routes/user')(app);
-const quizRoutes = require('./routes/quiz');
+require('./src/routes/auth')(app);
+require('./src/routes/user')(app);
+const quizRoutes = require('./src/routes/quiz');
 app.use('/api/quiz', quizRoutes);
 
 
