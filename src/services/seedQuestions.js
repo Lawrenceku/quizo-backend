@@ -1,5 +1,5 @@
 const db = require('../models'); // Import db object containing models
-const quizData = require('./quizData.js'); // Import quiz data from JSON file
+const quizData = require('../questionData'); // Import quiz data from JSON file
 
 // Function to shuffle an array
 const shuffleArray = (array) => {
