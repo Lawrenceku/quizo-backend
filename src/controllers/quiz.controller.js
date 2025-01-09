@@ -1,32 +1,26 @@
-const db = require('../models'); // Import the db object
+const db = require('../models');
 
-const getRandomQuestions = async (desiredCount) => {
-    try {
-        // Fetch 10 random questions directly from the database
-        const randomQuestions = await db.Question.findAll({
-            order: sequelize.literal('RANDOM()'), // Randomize order
-            limit: desiredCount, // Limit to 10 questions
-            include: [
-                {
-                    model: db.Option,
-                    as: 'options', // Include associated options
-                },
-            ],
-        });
-
-        return randomQuestions;
-    } catch (error) {
-        console.error('Error fetching random questions:', error);
-        throw error;
-    }
-};
-
-// Example usage in a route/controller
 exports.getRandomQuestions = async (req, res) => {
     try {
-        const questions = await getRandomQuestions(10); // Fetch 10 random questions
+        const totalCount = await db.Question.count();
+        const limit = Math.min(10, totalCount);
+        
+        // Get all questions in random order
+        const questions = await db.Question.findAll({
+            include: [{
+                model: db.Option,
+                as: 'options'
+            }],
+            order: db.sequelize.random(),  // This is the Sequelize way to ORDER BY RAND()
+            limit: limit
+        });
+
         res.status(200).json(questions);
     } catch (error) {
-        res.status(500).json({ error: 'Failed to fetch questions' });
+        console.error('Error fetching random questions:', error);
+        res.status(500).json({ 
+            error: 'Failed to fetch questions',
+            details: process.env.NODE_ENV === 'development' ? error.message : undefined
+        });
     }
 };
