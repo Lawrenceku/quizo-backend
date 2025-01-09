@@ -20,10 +20,10 @@ app.get('/', (req, res) => {
   res.json({ message: 'Welcome to the application.' });
 });
 
-db.sequelize.sync({ force: true }) // Use force: true to recreate the tables
+db.sequelize.sync({ alter: true }) // Adjust tables to match models without destroying data
   .then(() => {
     console.log('Database synced.');
-    seedQuestions(); // Call the seeding function
+    seedQuestions(); // Call the seeding function only if required
   })
   .catch((error) => console.error('Error syncing database:', error));
 
